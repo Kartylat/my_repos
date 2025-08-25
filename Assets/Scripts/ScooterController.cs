@@ -3,23 +3,23 @@ using UnityEngine;
 public class ScooterController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 8.0f; // forward towards negative Z or player Z
-    [SerializeField] private float despawnZ = -10f; // if passes player and not destroyed -> miss
-    [SerializeField] private int laneIndex = 1; // 0-left, 1-middle, 2-right
+    [SerializeField] private float moveSpeed = 8.0f; // движение вперёд к игроку (по -Z)
+    [SerializeField] private float despawnZ = -10f; // если проехал мимо игрока и не уничтожен — промах
+    [SerializeField] private int laneIndex = 1; // 0-левая, 1-центральная, 2-правая
     [SerializeField] private float laneOffset = 2.0f;
 
     [Header("Scoring")]
     [SerializeField] private int scorePerHit = 1;
 
-    private bool wasResolved = false; // hit or caused game over or missed
+    private bool wasResolved = false; // уже обработан (сбит/попадание/промах)
 
     private void Start()
     {
-        // Snap to lane at spawn
+        // Привязка к полосе при спавне
         Vector3 pos = transform.position;
         pos.x = (laneIndex - 1) * laneOffset;
         transform.position = pos;
-        gameObject.tag = "Scooter"; // ensure tag for player collision
+        gameObject.tag = "Scooter"; // гарантируем тег для столкновения с игроком
     }
 
     private void Update()
@@ -29,7 +29,7 @@ public class ScooterController : MonoBehaviour
         if (!wasResolved && transform.position.z < despawnZ)
         {
             wasResolved = true;
-            // Missed scooter -> game over
+            // Промах по самокату — конец игры
             ScoreManager.Instance?.TriggerGameOver();
             Destroy(gameObject);
         }
@@ -39,7 +39,7 @@ public class ScooterController : MonoBehaviour
     {
         if (wasResolved) return;
 
-        // Hit by player's attack
+        // Попадание атакой игрока
         if (other.CompareTag("PlayerAttack"))
         {
             wasResolved = true;
@@ -48,7 +48,7 @@ public class ScooterController : MonoBehaviour
             return;
         }
 
-        // If we collide with player (backup in case player doesn't handle it)
+        // Столкновение с игроком (резервный вариант, если игрок не обработал)
         if (other.CompareTag("Player"))
         {
             wasResolved = true;

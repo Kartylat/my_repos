@@ -40,7 +40,7 @@ public class ScoreManager : MonoBehaviour
     public void TriggerGameOver()
     {
         OnGameOver.Invoke();
-        // Additional handling can be added by listeners (UI reload, scene reset, etc.)
+        // Дополнительная логика добавляется слушателями (UI перезагрузка, сброс сцены и т.п.)
     }
 }
 

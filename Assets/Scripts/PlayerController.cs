@@ -3,23 +3,23 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float laneOffset = 2.0f; // distance between lanes
-    [SerializeField] private float moveSpeed = 10.0f; // horizontal move lerp speed
-    [SerializeField] private int currentLaneIndex = 1; // 0-left, 1-middle, 2-right
+    [SerializeField] private float laneOffset = 2.0f; // расстояние между дорожками
+    [SerializeField] private float moveSpeed = 10.0f; // скорость плавного смещения по горизонтали
+    [SerializeField] private int currentLaneIndex = 1; // 0-левая, 1-центральная, 2-правая
 
     [Header("Swipe")]
-    [SerializeField] private float minSwipeDistance = 50f; // in pixels
+    [SerializeField] private float minSwipeDistance = 50f; // в пикселях
 
     [Header("Attack")]
     [SerializeField] private float attackDuration = 0.2f;
-    [SerializeField] private GameObject attackHitbox; // child object with collider marked as Trigger
+    [SerializeField] private GameObject attackHitbox; // дочерний объект с коллайдером (isTrigger=true)
 
     private Vector2 touchStartPos;
     private bool isAttacking = false;
 
     private void Start()
     {
-        // Ensure attack hitbox is disabled initially
+        // Отключаем хитбокс атаки при старте
         if (attackHitbox != null)
         {
             attackHitbox.SetActive(false);
@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
         }
 
 #if UNITY_EDITOR || UNITY_STANDALONE
-        // Editor/desktop input for testing
+        // Ввод в редакторе/на ПК для тестов
         if (Input.GetKeyDown(KeyCode.LeftArrow)) MoveLeft();
         if (Input.GetKeyDown(KeyCode.RightArrow)) MoveRight();
         if (Input.GetKeyDown(KeyCode.UpArrow)) TriggerAttack();
@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
 
     private void MoveToTargetLane()
     {
-        float targetX = (currentLaneIndex - 1) * laneOffset; // middle is 0
+        float targetX = (currentLaneIndex - 1) * laneOffset; // середина — 0
         Vector3 targetPos = new Vector3(targetX, transform.position.y, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * moveSpeed);
     }
@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // If something collides with the player directly (e.g., scooter), trigger game over
+        // Если что-то напрямую сталкивается с игроком (например, самокат) — конец игры
         if (other.CompareTag("Scooter"))
         {
             ScoreManager.Instance?.TriggerGameOver();
